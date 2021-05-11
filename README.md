@@ -55,6 +55,7 @@
 - `DevTools`: Realiza o restart automático da aplicação uma vez que há uma alteração dentro de uma classe ou arquivo. Isso evita que a pessoa desenvolvedora precise parar a aplicação e a inicie de novo. 
 - `Spring Data JPA`: Para fazer conexão com o banco de dados.
 - `MySQL`: Para se conectar especificamente com o MySQL
+- `Lombok`: Para evitar de escrever códigos boiler plates (get e set). Mas é preciso instalar o plugin também nesse [link](https://projectlombok.org/).
 - - - 
 ### applications.porpeties
 - Para a conexão com o banco de dados :point_down:
