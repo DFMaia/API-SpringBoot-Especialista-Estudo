@@ -10,6 +10,12 @@
 - - -
 ### O que é REST?
 - :point_right: Representation State Transfer
+- Não é uma tecnlogia que pode ser baixada e instalada. 
+- É uma especificação de modelo estrutural. 
+- É uma especificação que define a forma de comunicação de componentes de software na web independente da linguagem de comunicação.
+- É escalável.
+- Separação entre cliente e servidor.
+- A diferença entre **_REST_** e **_RESTful_** é conceitual. **_REST_** é o estilo arquiterural. **_RESTful_** é construídas em conformidades com as constraints (religiosamente).
 - - -
 ### O que é Spring?
 - :point_right: É uma tecnologia de backend. Não é apenas um framework. Um _**conjunto**_ de projetos que resolvem vários problemas de um programador backend.
@@ -20,6 +26,17 @@
 - [GitHub do Spring](https://github.com/spring-projects/spring-boot).
 - [Documentação Spring Properties](https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-application-properties.html).
 - - - 
+### Protocolo HTTP
+- É uma requisição resposta.
+- **_Composição da requisição_**: `[MÉTODO] [URI] HTTP/[VERSÃO] [Cabeçalhos] [CORPO/PAYLOAD]`
+- `[MÉTODO GET]`: Solicita uma resposta dos dados que precisamos.
+- `[MÉTODO POST]`: Submete dados para o servidor. Adicionar dados em DB por exemplo.
+- `[MÉTODO DELETE]`: Deleta informações em banco. 
+- `[MÉTODO UPDATE]`: Atualiza o dado em um banco. 
+- `[URI]`: _Uniform Resource Identifier_ Conjunto de caracteres a dar um endereço aos recursos de forma não ambígua. `URL` é um tipo de `URI`.
+- `[CABEÇALHO]`: Informação sobre as requisições. Definem nomes de chaves e valores que podem ser usados pelo servidor para interpretar a requisição e executar. 
+- **_Composição da resposta_**: `[HTTP]/[Versão] [STATUS] [Cabeçalhos] [CORPO]`
+- - -
 ### Porque Usar o Spring?
 - Canivete suíço para desenvolvedores Java.
 - Simplicidade.
@@ -44,11 +61,12 @@
 - - - 
 ### O que é Hibernate?
 - Hibernate é a implementação da especificação JPA.
-- - - 
+- - -
 ### Ambiente de Desenvolvimento
 - JDK 12.
 - IDE de uso: [Spring Tools Suite](https://spring.io/tools).
 - MySQL Workbench. [Documentação](https://dev.mysql.com/doc/connector-j/8.0/en/)
+- [Postman](https://www.postman.com/downloads/)
 - - - 
 ### Sobre o POM
 - Toda dependência está sendo adicionada pelo Spring Tools e não por código xml coletado no repositório Maven. `Botão direito no projeto -> Spring -> add starters`
@@ -56,6 +74,14 @@
 - `Spring Data JPA`: Para fazer conexão com o banco de dados.
 - `MySQL`: Para se conectar especificamente com o MySQL
 - `Lombok`: Para evitar de escrever códigos boiler plates (get e set). Mas é preciso instalar o plugin também nesse [link](https://projectlombok.org/).
+- `XML`: Permite que a API responda requisições em XML. Por padrão ela responde sempre em json. :point_down:
+~~~XML
+<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-xml</artifactId>
+</dependency>
+~~~
+- ?
 - - - 
 ### applications.porpeties
 - Para a conexão com o banco de dados :point_down:
@@ -85,6 +111,32 @@
 - `@GeneratedValue(strategy = GenerationType.IDENTITY)`: Faz com que o id seja incrementado de 1 em 1.
 - `@Column`: Coluna da tabela que no Java é um atributo. Caso o nome na tabela desta coluna seja outro, coloque entre parênteses logo depois da `annotation`: (name = "nome_cozinha").
 - `@PersistenceContext`: É usado para a interface `EntityManager`. Pode ser usado o `@Autowired`, mas como existe uma `annotations` diretamente para o `EntityManager`, então é bom usá-la. 
+- `@ResponseBody`: As respostas dos métodos daquela classe devem ir no corpo de resposta da API.
+- `@RestController`: É um `Controller` e um `ResponseBody`
+- `@GetMapping`: Método a ser mapeado. Por padrão ele é sempre Get. 
+- `@GetMapping(produces = "application/json")` OU : `@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)`: Para poder escolher quais métodos retornam json ou XML ou qualquer outro formato que você escolher. Pode colocar depois do símbolo = um array { } com todas as Media Types. Isso pode ficar dentro de `@RequestMapping`, pois dessa forma toda a classe poderá retornar somente o que for selecionado. Para isso, antes da String de mapping (exemplo: "/cozinhas"), deve-se inserir o value. Ficaria algi assim: `@RequestMapping(value = "/cozinhas", produces = MediaType.APPLICATION_JSON_VALUE)`
+- `@PathVariable`: Usado para retorno de um singleton (um único objeto no corpo do json).
+~~~Java
+@GetMapping("/{cozinhaId}")
+	public Cozinha buscar (@PathVariable("cozinhaId") Long id) {
+	return cozinhaRepository.buscar(id);
+}
+~~~
+OU
+~~~Java
+@GetMapping("/{cozinhaId}")
+public Cozinha buscar (@PathVariable Long cozinhaId) {
+	return cozinhaRepository.buscar(cozinhaId);
+}
+~~~
+- `@JsonProperty("título")`: Essa `annotation` altera a chave que aparece no corpo do json. Na `@Entity` a propriedade **_nome_** aparece como **_nome_** no json. Quando eu coloco essa `annotation` em cima da propriedade **_nome_**, no corpo do json ao invés de retornar como **_nome_** ele retornar como **_título_**. :point_down:
+~~~Java
+@JsonProperty("título")
+@Column(nullable = false)
+private String nome;
+~~~
+- `@JsonIgnore`: Quando você quer que um atributo da `@Entity` não apareça no corpo da requisição.
+- `@JsonRootName("gastronomia")`: Quando fazemos uma requisição get em XML ele retornar o objeto Cozinha como uma tag Cozinha. Aqui eu consigo substiruir por `gastronomia.` Essa `annotation` fica na entidade (não fica em método)
 - - - 
 ### Sobre código:
 - `EntityManager`: É uma interface no JPA. É a que gerencia o contexto de persistência. Gerencia o código e a conversa com o banco. Salva no banco, consulta, altera, delete, etc.
