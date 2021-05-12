@@ -140,3 +140,26 @@ private String nome;
 - - - 
 ### Sobre código:
 - `EntityManager`: É uma interface no JPA. É a que gerencia o contexto de persistência. Gerencia o código e a conversa com o banco. Salva no banco, consulta, altera, delete, etc.
+:point_down: _**`O próximo tópico não vai ficar no projeto. É apenas uma forma de mostrar que é possível controlar as tags XML caso você queira trabalhar com elas. O padrão Json é o mais usado no mercado, é preciso avaliar se o esforço vale a pena.`**_ :point_down:
+- `CozinhaXmlWrapper.class`: É possível responder em xml. E é possível alterar os nomes das tags. Se você quiser todo o controle das tags é preciso criar uma classe como essa e ter o seguint código: 
+~~~Java
+@JacksonXmlRootElement(localName = "cozinhas")
+@Data
+public class CozinhasXmlWrapper {
+	
+	@JsonProperty("cozinha")
+	@JacksonXmlElementWrapper(useWrapping = false)
+	@NonNull
+	private List<Cozinha> cozinhas;
+
+}
+~~~
+A primeira `annotation @JacksonXmlRootElement(localName = "cozinhas")` é para alterar a tag do objeto. A `annotation @JsonProperty("cozinha")`é para substituir a tag _**item**_. A `annotation @NonNull` é para não permitir que o método dessa classe possua construtor com parâmetro.
+Já na classe `CozinhaController`
+~~~Java
+@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
+public CozinhasXmlWrapper listarXml(){
+	return new CozinhasXmlWrapper(cozinhaRepository.listar());
+}
+~~~
+a `annotation @GetMapping(produces = MediaType.APPLICATION_XML_VALUE)` vai explicitar na resposta da requisição as alterações feitas acima. 
