@@ -222,4 +222,39 @@ public ResponseEntity<Cozinha> buscar (@PathVariable Long cozinhaId) {
 			.build();
 }
 ~~~
-- 
+- `BeanUtils.copyProperties`: quando você quiser copiar parâmetros de um objeto do mesmo tipo para o outro, você pode usar isso.
+Se a atualização do recurso fosse atualizar muitos atributos, muitos gets seriam usados. No Exemplo abaixo foram usandos somente um. 
+Sem o BeanUtils :point_down:
+~~~Java
+@PutMapping("/{cozinhaId}")
+public ResponseEntity<Cozinha> atualizar(@PathVariable Long cozinhaId,@RequestBody Cozinha cozinha){
+	Cozinha cozinhaAtual = cozinhaRepository.buscar(cozinhaId);
+		
+	if (cozinhaAtual != null) {
+	cozinhaAtual.setNome(cozinha.getNome());
+			
+	cozinhaAtual = cozinhaRepository.salvar(cozinhaAtual);
+	return ResponseEntity.ok(cozinhaAtual);
+	}
+		
+	return ResponseEntity.notFound().build();
+}
+~~~
+Com muitos atributos para serem atualizados e ao invés de usar muitos gets, com o uso do recurso abaixo, ele copia tudo para dentro do objeto do mesmo tipo. 
+Com o `BeanUtils.copyProperties`:
+~~~Java
+@PutMapping("/{cozinhaId}")
+public ResponseEntity<Cozinha> atualizar(@PathVariable Long cozinhaId,@RequestBody Cozinha cozinha){
+	Cozinha cozinhaAtual = cozinhaRepository.buscar(cozinhaId);
+		
+	if (cozinhaAtual != null) {
+	BeanUtils.copyProperties(cozinha, cozinhaAtual, "id");
+			
+	cozinhaAtual = cozinhaRepository.salvar(cozinhaAtual);
+	return ResponseEntity.ok(cozinhaAtual);
+	}
+		
+	return ResponseEntity.notFound().build();
+}
+~~~
+Ou seja, de tiver _**MUITAS PROPRIEDADES**_ para atualizar, basta fazer isso :point_up:
