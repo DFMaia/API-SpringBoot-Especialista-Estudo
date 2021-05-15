@@ -29,14 +29,37 @@
 ### Protocolo HTTP
 - É uma requisição resposta.
 - **_Composição da requisição_**: `[MÉTODO] [URI] HTTP/[VERSÃO] [Cabeçalhos] [CORPO/PAYLOAD]`
-- `[MÉTODO GET]`: Solicita uma resposta dos dados que precisamos.
-- `[MÉTODO POST]`: Submete dados para o servidor. Adicionar dados em DB por exemplo.
-- `[MÉTODO DELETE]`: Deleta informações em banco. 
+- `[MÉTODO GET]`: Obtem a representação de um recurso.
+- `[MÉTODO POST]`: Cria um novo recurso dentro de uma coleção de recursos.
+- `[MÉTODO PUT]`: Atualiza determinado recurso. Envia no corpo da requisição o que deve ser atualizado. Nesse método, todo o recurso deve ser atualizado. Se algum item do recruso não for enviado/preenchido no corpo da requisição ele será alterado como vazio ou nulo. Alguns desenvolvedor usam o `PUT` ao invés do `POST` para criar novos recursos. Isso é má prática.  
+- `[MÉTODO PATCH]`: Atualiza somente um elemento do recurso. _**Não é muito usado**_ e sua implementação não é simples. 
+- `[MÉTODO DELETE]`: Remoção de um recurso. Não é passado nada no corpo. 
+- `[MÉTODO HEAD]`:  Mesmo que o `GET` mas nunca retorna um corpo na resposta. Usado apenas para buscar um cabeçalho. O consumidor quando usa isso, quer saber se uma `URI` é válida, qual `MediaType` é aceito.
+- `[MÉTODO OPTIONS]`: Retorna uma lista de métodos suportada pelo recurso. 
 - `[MÉTODO UPDATE]`: Atualiza o dado em um banco. 
 - `[URI]`: _Uniform Resource Identifier_ Conjunto de caracteres a dar um endereço aos recursos de forma não ambígua. `URL` é um tipo de `URI`.
-- `[CABEÇALHO]`: Informação sobre as requisições. Definem nomes de chaves e valores que podem ser usados pelo servidor para interpretar a requisição e executar. 
 - **_Composição da resposta_**: `[HTTP]/[Versão] [STATUS] [Cabeçalhos] [CORPO]`
 - - -
+### Status HTTP
+- A lista de status de HHTP pode ser encontrada nesse [link](https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Status)
+- _**Nível 200**_: Indica que a requisição foi bem sucessida.
+&nbsp;&nbsp;&nbsp;&nbsp;200: OK.
+&nbsp;&nbsp;&nbsp;&nbsp;2001: Criado.
+&nbsp;&nbsp;&nbsp;&nbsp;204: Sem conteudo (_Quando por exemplo um conteúdo é excluído com sucesso e então o recurso fica sem conteúdo_)
+- _**Nível 300**_: Indica status de redirecionamento. 
+&nbsp;&nbsp;&nbsp;&nbsp;301: Movido permanentemente.
+&nbsp;&nbsp;&nbsp;&nbsp;302: Encontrado.
+- _**Nível 400**_: Indica algum erro por parte do consumidor da API. (Por parte de quem criou)
+&nbsp;&nbsp;&nbsp;&nbsp;400: Requisição mal feita.
+&nbsp;&nbsp;&nbsp;&nbsp;401: Não autorizado (precisa ser autenticado)
+&nbsp;&nbsp;&nbsp;&nbsp;403: Proibido.
+&nbsp;&nbsp;&nbsp;&nbsp;404: Não encontrado.
+&nbsp;&nbsp;&nbsp;&nbsp;405: Método não permitido.
+&nbsp;&nbsp;&nbsp;&nbsp;406: Não aceito.
+- _**Nível 500**_: Indica um problema no servidor ou no código.
+&nbsp;&nbsp;&nbsp;&nbsp;500: Erro interno no servidor (por exemplo quando não há um nullPointerException)
+&nbsp;&nbsp;&nbsp;&nbsp;503: Serviço indisponível,
+- - - 
 ### Porque Usar o Spring?
 - Canivete suíço para desenvolvedores Java.
 - Simplicidade.
@@ -137,10 +160,12 @@ private String nome;
 ~~~
 - `@JsonIgnore`: Quando você quer que um atributo da `@Entity` não apareça no corpo da requisição.
 - `@JsonRootName("gastronomia")`: Quando fazemos uma requisição get em XML ele retornar o objeto Cozinha como uma tag Cozinha. Aqui eu consigo substiruir por `gastronomia.` Essa `annotation` fica na entidade (não fica em método)
+- `@ResponseStatus(HttpStatus.CREATED)`: Coloco em cima do método (geralmente na controller) para informar qual é o status que ele deve retornar.
 - - - 
 ### Sobre código:
 - `EntityManager`: É uma interface no JPA. É a que gerencia o contexto de persistência. Gerencia o código e a conversa com o banco. Salva no banco, consulta, altera, delete, etc.
-:point_down: _**`O próximo tópico não vai ficar no projeto. É apenas uma forma de mostrar que é possível controlar as tags XML caso você queira trabalhar com elas. O padrão Json é o mais usado no mercado, é preciso avaliar se o esforço vale a pena.`**_ :point_down:
+:point_down: _**
+- `O próximo tópico não vai ficar no projeto. É apenas uma forma de mostrar que é possível controlar as tags XML caso você queira trabalhar com elas. O padrão Json é o mais usado no mercado, é preciso avaliar se o esforço vale a pena.`**_ :point_down:
 - `CozinhaXmlWrapper.class`: É possível responder em xml. E é possível alterar os nomes das tags. Se você quiser todo o controle das tags é preciso criar uma classe como essa e ter o seguint código: 
 ~~~Java
 @JacksonXmlRootElement(localName = "cozinhas")
@@ -163,3 +188,38 @@ public CozinhasXmlWrapper listarXml(){
 }
 ~~~
 a `annotation @GetMapping(produces = MediaType.APPLICATION_XML_VALUE)` vai explicitar na resposta da requisição as alterações feitas acima. 
+- `ResponseEntity<Cozinha>`: Permite que eu construa o tipo de retorno. Perceba no código abaixo que esse método retorna um tipo (uma cozinha) no corpo (body).
+~~~Java
+@GetMapping("/{cozinhaId}")
+public ResponseEntity<Cozinha> buscar (@PathVariable Long cozinhaId) {
+	Cozinha cozinha = cozinhaRepository.buscar(cozinhaId);
+		
+	return ResponseEntity.status(HttpStatus.OK).body(cozinha);
+}
+~~~
+O método de cima :point_up: é bom para quando se está usando condicionais. 
+O de baixo :point_down: para quando só há aquela possibilidade mesmo e por isso há uma forma mais simplificada de se faze isso. Repare no retorno:
+~~~Java
+@GetMapping("/{cozinhaId}")
+public ResponseEntity<Cozinha> buscar (@PathVariable Long cozinhaId) {
+	Cozinha cozinha = cozinhaRepository.buscar(cozinhaId);
+		
+	return ResponseEntity.ok(cozinha);
+}
+~~~
+E por fim, quando quero personalizar um header, além de personalizar somente o status :point_down:
+~~~Java
+@GetMapping("/{cozinhaId}")
+public ResponseEntity<Cozinha> buscar (@PathVariable Long cozinhaId) {
+	Cozinha cozinha = cozinhaRepository.buscar(cozinhaId);
+		
+	HttpHeaders headers = new HttpHeaders();
+	headers.add(HttpHeaders.LOCATION, "http://api.algafood.local:8080/cpzinhas");
+		
+	return ResponseEntity
+			.status(HttpStatus.FOUND)
+			.headers(headers)
+			.build();
+}
+~~~
+- 
