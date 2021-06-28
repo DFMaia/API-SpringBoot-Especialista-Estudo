@@ -1,4 +1,4 @@
-# Sobre esse repositório:
+﻿# Sobre esse repositório:
 - Esse repositório é um esoforço para aprender sobre REST API
 - O objetivo do projeto é se tornar um espcialista SpringRest. 
 - O Curso é disponibilizado pela AlgaWorks.
@@ -43,22 +43,22 @@
 ### Status HTTP
 - A lista de status de HHTP pode ser encontrada nesse [link](https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Status)
 - _**Nível 200**_: Indica que a requisição foi bem sucessida.
-&nbsp;&nbsp;&nbsp;&nbsp;200: OK.
-&nbsp;&nbsp;&nbsp;&nbsp;2001: Criado.
-&nbsp;&nbsp;&nbsp;&nbsp;204: Sem conteudo (_Quando por exemplo um conteúdo é excluído com sucesso e então o recurso fica sem conteúdo_)
+- - 200: OK.
+- - 2001: Criado.
+- - 204: Sem conteudo (_Quando por exemplo um conteúdo é excluído com sucesso e então o recurso fica sem conteúdo_)
 - _**Nível 300**_: Indica status de redirecionamento. 
-&nbsp;&nbsp;&nbsp;&nbsp;301: Movido permanentemente.
-&nbsp;&nbsp;&nbsp;&nbsp;302: Encontrado.
+- - 301: Movido permanentemente.
+- - 302: Encontrado.
 - _**Nível 400**_: Indica algum erro por parte do consumidor da API. (Por parte de quem criou)
-&nbsp;&nbsp;&nbsp;&nbsp;400: Requisição mal feita.
-&nbsp;&nbsp;&nbsp;&nbsp;401: Não autorizado (precisa ser autenticado)
-&nbsp;&nbsp;&nbsp;&nbsp;403: Proibido.
-&nbsp;&nbsp;&nbsp;&nbsp;404: Não encontrado.
-&nbsp;&nbsp;&nbsp;&nbsp;405: Método não permitido.
-&nbsp;&nbsp;&nbsp;&nbsp;406: Não aceito.
+- - 400: Requisição mal feita.
+- - 401: Não autorizado (precisa ser autenticado)
+- - 403: Proibido.
+- - 404: Não encontrado.
+- - 405: Método não permitido.
+- - 406: Não aceito.
 - _**Nível 500**_: Indica um problema no servidor ou no código.
-&nbsp;&nbsp;&nbsp;&nbsp;500: Erro interno no servidor (por exemplo quando não há um nullPointerException)
-&nbsp;&nbsp;&nbsp;&nbsp;503: Serviço indisponível,
+- - 500: Erro interno no servidor (por exemplo quando não há um nullPointerException)
+- - 503: Serviço indisponível,
 - - - 
 ### Porque Usar o Spring?
 - Canivete suíço para desenvolvedores Java.

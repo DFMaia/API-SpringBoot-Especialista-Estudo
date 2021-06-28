@@ -53,7 +53,7 @@ public class CozinhaController {
 	}
 	
 	@PutMapping("/{cozinhaId}")
-	public ResponseEntity<Cozinha> atualizar(@PathVariable Long cozinhaId,@RequestBody Cozinha cozinha){
+	public ResponseEntity<Cozinha> atualizar(@PathVariable Long cozinhaId, @RequestBody Cozinha cozinha){
 		Cozinha cozinhaAtual = cozinhaRepository.buscar(cozinhaId);
 		if (cozinhaAtual != null) {
 			BeanUtils.copyProperties(cozinha, cozinhaAtual, "id");
@@ -67,12 +67,12 @@ public class CozinhaController {
 	public ResponseEntity<Cozinha> remover(@PathVariable Long cozinhaId){
 		try {
 			cadastroCozinha.excluir(cozinhaId);
+			return ResponseEntity.noContent().build();
+			
+		} catch (EntidadeNaoEncontradaException e) { 
 			return ResponseEntity.notFound().build();
 			
-		}catch (EntidadeNaoEncontradaException e) { 
-			return ResponseEntity.notFound().build();
-			
-		}catch(EntidadeEmUsoException e) {
+		} catch(EntidadeEmUsoException e) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).build();
 		}
 		
