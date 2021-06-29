@@ -258,3 +258,29 @@ public ResponseEntity<Cozinha> atualizar(@PathVariable Long cozinhaId,@RequestBo
 }
 ~~~
 Ou seja, de tiver _**MUITAS PROPRIEDADES**_ para atualizar, basta fazer isso :point_up:
+- `Facilitando a mensagem de erro ao consumidor e o caso do "?"`: 
+O caso abaixo :point_down: não vai compilar porque o retorno do ResponseEntity está como a String de uma exeção e portanto o método deve ser uma `ResponseEntity` de String. Como estamos falando que o retorno em caso positivo seja um Restaurante, retornar uma String seria inviável nesse caso.  
+~~~Java
+@PostMapping
+	public ResponseEntity<Restaurante> adicionar (@RequestBody Restaurante restaurante){
+		try {
+			restaurante = cadastroRestaurante.salvar(restaurante);
+			return ResponseEntity.status(HttpStatus.CREATED).body(restaurante);
+		}catch(EntidadeNaoEncontradaException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
+~~~
+Para solucionar o esse problema, bast substituir a `ResponseEntity`restaurante por `?` como no código abaixo :point_down::
+~~~Java
+@PostMapping
+	public ResponseEntity<?> adicionar (@RequestBody Restaurante restaurante){
+		try {
+			restaurante = cadastroRestaurante.salvar(restaurante);
+			return ResponseEntity.status(HttpStatus.CREATED).body(restaurante);
+		}catch(EntidadeNaoEncontradaException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
+~~~
+- 
